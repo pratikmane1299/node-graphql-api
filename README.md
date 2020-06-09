@@ -10,8 +10,8 @@ A graphql api with [**node**](https://nodejs.org/en/), [**apollo-graphql**](http
 **Clone the repo**
 
 ```bash
-- git clone https://github.com/pratikmane1299/node-graphql-api.git
-- cd deno-rest-api
+$ git clone https://github.com/pratikmane1299/node-graphql-api.git
+$ cd deno-rest-api
 ```
 
 **Setting up environment vaiables**
@@ -26,5 +26,5 @@ DB_URL=<Mongodb url>
 
 **Running the project**
 ```bash
-npm start
+$ npm start
 ```
