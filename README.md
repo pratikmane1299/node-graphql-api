@@ -3,7 +3,7 @@ A graphql api with [**node**](https://nodejs.org/en/), [**apollo-graphql**](http
 
 ## Requirements
 
-- **Mongodb** : [**mongodb**](https://docs.mongodb.com/manual/installation/)
+- **Mongodb** : https://docs.mongodb.com/manual/installation/
 
 ## Getting Started
 
@@ -14,7 +14,12 @@ $ git clone https://github.com/pratikmane1299/node-graphql-api.git
 $ cd deno-rest-api
 ```
 
-**Setting up environment vaiables**
+**Install dependencies**
+```bash
+$ npm install
+```
+
+**Setup environment vaiables**
 
 Create a .env in the root of the project
 
