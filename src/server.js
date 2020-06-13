@@ -6,7 +6,7 @@ import resolvers from './resolvers'
 import models, { connectDB } from './models'
 
 const app = express()
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 3000
 
 const graphqlServer = new ApolloServer({
   typeDefs: schema,
@@ -24,10 +24,10 @@ const graphqlServer = new ApolloServer({
 graphqlServer.applyMiddleware({ app })
 
 connectDB().then(async () => {
-  /* await Promise.all([
-    models.User.deleteMany({}),
-    models.Post.deleteMany({})
-  ]) */
+  // await Promise.all([
+  //   models.User.deleteMany({}),
+  //   models.Post.deleteMany({})
+  // ])
   console.log('connected to DB')
 })
 

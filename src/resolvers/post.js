@@ -3,19 +3,20 @@ import { getUserId } from './../util.js'
 export default {
   Query: {
     posts: async (_, __, { models }) => {
-      return await models.Post.find({}, '_id title content')
+      return await models.Post.find({}, '_id title content thumbnail')
     },
     post: async (_, { id }, { models }) => {
-      return await models.Post.findOne({ _id: id }, '_id title content')
-    }
+      return await models.Post.findOne({ _id: id }, '_id title content thumbnail')
+    },
   },
   Mutation: {
-    createPost: async (_, { title, content }, { models, req, secret }) => {
+    createPost: async (_, { title, content, thumbnail }, { models, req, secret }) => {
       const userId = await getUserId(req, secret, models)
 
       const post = await models.Post.create({
         title,
         content,
+        thumbnail,
         author: userId
       })
 
@@ -27,7 +28,8 @@ export default {
       return {
         id: post._id,
         title,
-        content
+        content,
+        thumbnail
       }
     },
     deletePost: async (_, { id }, { req, secret, models }) => {

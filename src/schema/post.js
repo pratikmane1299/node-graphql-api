@@ -7,7 +7,7 @@ const postSchema = gql`
   }
 
   extend type Mutation {
-    createPost(title: String!, content: String!): Post!
+    createPost(title: String!, content: String!, thumbnail: String): Post!
     updatePost(id: ID!, title: String!, content: String!): Post!
     deletePost(id: ID!): Post
   }
@@ -16,6 +16,7 @@ const postSchema = gql`
     id: ID!
     title: String!
     content: String!
+    thumbnail: String
     author: User!
   }
 `
