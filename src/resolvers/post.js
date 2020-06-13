@@ -1,9 +1,27 @@
 import { getUserId } from './../util.js'
+const { GraphQLScalarType } = require('graphql');
+const { Kind } = require('graphql/language');
 
 export default {
+  Date: new GraphQLScalarType({
+    name: 'Date',
+    description: 'Date custom scalar type',
+    parseValue(value) {
+      return value
+    },
+    serialize(value) {
+      return new Date(Number(value))
+    },
+    parseLiteral(ast) {
+      if (ast.kind === Kind.INT) {
+        return new Date(ast.value) // ast value is always in string format
+      }
+      return null;
+    },
+  }),
   Query: {
     posts: async (_, __, { models }) => {
-      return await models.Post.find({}, '_id title content thumbnail')
+      return await models.Post.find({})
     },
     post: async (_, { id }, { models }) => {
       return await models.Post.findOne({ _id: id }, '_id title content thumbnail')

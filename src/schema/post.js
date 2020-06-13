@@ -12,12 +12,16 @@ const postSchema = gql`
     deletePost(id: ID!): Post
   }
 
+  scalar Date
+
   type Post {
     id: ID!
     title: String!
     content: String!
     thumbnail: String
     author: User!
+    createdAt: Date,
+    updatedAt: Date
   }
 `
 export default postSchema
