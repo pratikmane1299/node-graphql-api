@@ -21,7 +21,7 @@ export default {
   }),
   Query: {
     posts: async (_, __, { models }) => {
-      return await models.Post.find({})
+      return await models.Post.find({}).sort({ createdAt: -1 })
     },
     post: async (_, { id }, { models }) => {
       return await models.Post.findOne({ _id: id }, '_id title content thumbnail')
