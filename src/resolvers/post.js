@@ -47,7 +47,8 @@ export default {
         id: post._id,
         title,
         content,
-        thumbnail
+        thumbnail,
+        createdAt: post.createdAt
       }
     },
     deletePost: async (_, { id }, { req, secret, models }) => {
