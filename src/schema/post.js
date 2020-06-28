@@ -4,6 +4,7 @@ const postSchema = gql`
   extend type Query {
     posts: [Post!]!
     post(id: ID!): Post
+    feed(offset: Int, limit: Int): [Post!]
   }
 
   extend type Mutation {
