@@ -1,4 +1,5 @@
 import { getUserId } from './../util.js'
+import { model } from 'mongoose';
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
 
@@ -26,6 +27,9 @@ export default {
     post: async (_, { id }, { models }) => {
       return await models.Post.findOne({ _id: id }, '_id title content thumbnail')
     },
+    feed: async (_, { offset = 0, limit = 5 }, { models }) => {
+      return await models.Post.find({}).sort({ createdAt: -1 }).skip(offset).limit(limit)
+    }
   },
   Mutation: {
     createPost: async (_, { title, content, thumbnail }, { models, req, secret }) => {
