@@ -23,14 +23,7 @@ $ npm install
 
 **Setup environment vaiables**
 
-Create a .env in the root of the project
-
-```sh
-# .env
-PORT=<Server Port>
-DB_URL=<Mongodb url>
-SECRET=<jwt secret>
-```
+Copy .env.example to .env and add your own values
 
 **Running the project**
 
