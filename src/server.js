@@ -4,8 +4,10 @@ import { ApolloServer } from 'apollo-server-express'
 import schema from './schema'
 import resolvers from './resolvers'
 import models, { connectDB } from './models'
+import path from 'path'
 
 const app = express()
+
 const port = process.env.PORT || 3000
 
 const graphqlServer = new ApolloServer({
@@ -20,6 +22,8 @@ const graphqlServer = new ApolloServer({
     }
   }
 })
+
+app.use(express.static(path.join(__dirname, 'public')))
 
 graphqlServer.applyMiddleware({ app })
 

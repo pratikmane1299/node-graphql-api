@@ -25,7 +25,7 @@ export default {
       return await models.Post.find({}).sort({ createdAt: -1 })
     },
     post: async (_, { id }, { models }) => {
-      return await models.Post.findOne({ _id: id }, '_id title content thumbnail')
+      return await models.Post.findOne({ _id: id })
     },
     feed: async (_, { offset = 0, limit = 5 }, { models }) => {
       return await models.Post.find({}).sort({ createdAt: -1 }).skip(offset).limit(limit)
