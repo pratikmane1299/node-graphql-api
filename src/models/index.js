@@ -4,7 +4,7 @@ import User from './user'
 import Post from './post'
 
 const connectDB = () => {
-  return mongoose.connect(process.env.DB_URL, {
+  return mongoose.connect(`${process.env.DB_URL}${process.env.DB_NAME}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
