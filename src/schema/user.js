@@ -14,6 +14,7 @@ const userSchema = gql`
   type User {
     id: ID!
     username: String!
+    avatar_url: String
     posts: [Post!]
   }
 

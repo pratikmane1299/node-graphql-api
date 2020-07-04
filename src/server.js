@@ -18,7 +18,8 @@ const graphqlServer = new ApolloServer({
     return {
       ...req,
       models,
-      secret: process.env.SECRET
+      secret: process.env.SECRET,
+      port
     }
   }
 })

@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     maxlength: 20
   },
+  avatar_url: String,
   posts: [
     {
       type: mongoose.Types.ObjectId,

@@ -4,17 +4,19 @@ import { AuthenticationError } from 'apollo-server'
 export default {
   Query: {
     users: async (_, __, { models }) => {
-      return await models.User.find({}, '_id username')
+      return await models.User.find({})
     },
     user: async (_, { id }, { models }) => {
-      return await models.User.findOne({ _id: id }, '_id username')
+      return await models.User.findOne({ _id: id })
     }
   },
   Mutation: {
-    signUp: async (_, { username, password }, { models, secret }) => {
+    signUp: async (_, { username, password }, { models, secret, req, port }) => {
+      const avatar_url = req.protocol + '://' + req.hostname + ':' + port + '/assets/avatar-person.png'
       const user = await models.User.create({
         username,
-        password
+        password,
+        avatar_url
       })
 
       const token = jwt.sign({ id: user._id, username }, secret)
