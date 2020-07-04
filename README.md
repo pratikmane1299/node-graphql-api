@@ -1,4 +1,5 @@
 # node-graphql-api
+
 A graphql api with [**node**](https://nodejs.org/en/), [**apollo-graphql**](https://www.apollographql.com/), [**express**](https://expressjs.com/) and [**mongodb**](https://www.mongodb.com/).
 
 ## Requirements
@@ -15,6 +16,7 @@ $ cd deno-rest-api
 ```
 
 **Install dependencies**
+
 ```bash
 $ npm install
 ```
@@ -27,9 +29,11 @@ Create a .env in the root of the project
 # .env
 PORT=<Server Port>
 DB_URL=<Mongodb url>
+SECRET=<jwt secret>
 ```
 
 **Running the project**
+
 ```bash
 $ npm start
 ```
