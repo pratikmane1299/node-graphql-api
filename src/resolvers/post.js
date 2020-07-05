@@ -79,11 +79,12 @@ export default {
   },
   Post: {
     author: async (post, args, { models }) => {
-      const user = await models.User.findOne({ posts: post.id }, 'id username')
+      const user = await models.User.findOne({ posts: post.id })
 
       return {
         id: user._id,
-        username: user.username
+        username: user.username,
+        avatar_url: user.avatar_url
       }
     }
   }
