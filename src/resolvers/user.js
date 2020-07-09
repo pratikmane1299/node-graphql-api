@@ -40,6 +40,12 @@ export default {
   User: {
     posts: async (user, args, { models }, info) => {
       return await models.Post.find({ author: user.id })
+    },
+    favourite_posts: async (user, args, { models }, info) => {
+      const data = await models.User
+        .findOne({ _id: user.id })
+        .populate('favourite_posts')
+      return data.favourite_posts
     }
   }
 }
