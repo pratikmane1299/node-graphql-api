@@ -19,6 +19,12 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Types.ObjectId,
       ref: 'Post'
     }
+  ],
+  favourite_posts: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: 'Post'
+    }
   ]
 })
 
