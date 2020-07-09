@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { AuthenticationError } from 'apollo-server'
 
+import { getUserId } from './../util.js'
+
 export default {
   Query: {
     users: async (_, __, { models }) => {
@@ -35,6 +37,22 @@ export default {
       })
 
       return { token }
+    },
+    addPostToFavourites: async (_, { postId }, { req, models, secret }) => {
+      const userId = await getUserId(req, secret, models)
+
+      const post = await models.Post.findOne({ _id: postId })
+
+      if (!post) {
+        throw Error('Post Not Found')
+      }
+
+      await models.User.updateOne(
+        { _id: userId },
+        { $push: { favourite_posts: { _id: postId } } }
+      )
+
+      return post
     }
   },
   User: {
