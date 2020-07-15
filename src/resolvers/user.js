@@ -23,7 +23,12 @@ export default {
 
       const token = jwt.sign({ id: user._id, username }, secret)
 
-      return { token }
+      return {
+        id: user._id,
+        username,
+        avatar_url,
+        token
+      }
     },
     login: async (_, { username, password }, { models, secret }) => {
       const user = await models.User.findOne({ username: username })
@@ -36,7 +41,12 @@ export default {
         expiresIn: '1h'
       })
 
-      return { token }
+      return {
+        id: user._id,
+        username: user.username,
+        avatar_url: user.avatar_url,
+        token
+      }
     },
     addPostToFavourites: async (_, { postId }, { req, models, secret }) => {
       const userId = await getUserId(req, secret, models)

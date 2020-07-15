@@ -7,8 +7,8 @@ const userSchema = gql`
   }
 
   extend type Mutation {
-    signUp(username: String!, password: String!): Token
-    login(username: String!, password: String!): Token
+    signUp(username: String!, password: String!): AuthResponse
+    login(username: String!, password: String!): AuthResponse
     addPostToFavourites(postId: ID!): Post
   }
 
@@ -20,7 +20,10 @@ const userSchema = gql`
     favourite_posts: [Post!]
   }
 
-  type Token {
+  type AuthResponse {
+    id: ID!
+    username: String!
+    avatar_url: String!
     token: String!
   }
 `
