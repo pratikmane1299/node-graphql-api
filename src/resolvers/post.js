@@ -33,7 +33,7 @@ export default {
   },
   Mutation: {
     createPost: async (_, { title, content, thumbnail }, { models, req, secret }) => {
-      const userId = await getUserId(req, secret, models)
+      const user = await getUserId(req, secret, models)
 
       const post = await models.Post.create({
         title,
@@ -56,7 +56,7 @@ export default {
       }
     },
     deletePost: async (_, { id }, { req, secret, models }) => {
-      const userId = await getUserId(req, secret, models)
+      const user = await getUserId(req, secret, models)
 
       await models.Post.deleteOne({ _id: id })
 
@@ -66,7 +66,7 @@ export default {
       )
     },
     updatePost: async (_, { id, title, content }, { req, secret, models }) => {
-      const userId = getUserId(req, secret, models)
+      const user = getUserId(req, secret, models)
 
       await models.Post.updateOne({ _id: id }, { title: title, content: content })
 

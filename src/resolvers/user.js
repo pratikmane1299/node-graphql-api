@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { AuthenticationError } from 'apollo-server'
 
-import { getUserId } from './../util.js'
+import { getUser } from './../util.js'
 
 export default {
   Query: {
@@ -10,6 +10,13 @@ export default {
     },
     user: async (_, { id }, { models }) => {
       return await models.User.findOne({ _id: id })
+    },
+    me: async (_, __, { req, models, secret }) => {
+      const user = await getUser(req, secret, models)
+
+      if (!user) throw new AuthenticationError('User Not Found')
+
+      return user;
     }
   },
   Mutation: {

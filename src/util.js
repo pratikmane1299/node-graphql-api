@@ -10,7 +10,7 @@ const createToken = async (user) => {
   })
 }
 
-const getUserId = async (req, secret, models) => {
+const getUser = async (req, secret, models) => {
   // console.log(req)
   const token = req.headers.authorization.split(' ')[1]
   if (!token) throw new AuthenticationError('Unauthorized, JWT token not found')
@@ -21,10 +21,10 @@ const getUserId = async (req, secret, models) => {
 
     if (!user) throw new AuthenticationError('Unauthorized')
 
-    return id
+    return user
   } catch (e) {
     throw new AuthenticationError('Invalid JWT token')
   }
 }
 
-export { createToken, getUserId }
+export { createToken, getUser }
