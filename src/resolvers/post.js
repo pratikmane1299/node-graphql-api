@@ -1,4 +1,4 @@
-import { getUserId } from './../util.js'
+import { getUser } from './../util.js'
 import { model } from 'mongoose';
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
@@ -33,17 +33,17 @@ export default {
   },
   Mutation: {
     createPost: async (_, { title, content, thumbnail }, { models, req, secret }) => {
-      const user = await getUserId(req, secret, models)
+      const user = await getUser(req, secret, models)
 
       const post = await models.Post.create({
         title,
         content,
         thumbnail,
-        author: userId
+        author: user.id
       })
 
       await models.User.updateOne(
-        { _id: userId },
+        { _id: user.id },
         { $push: { posts: { _id: post._id } } }
       )
 
@@ -56,19 +56,19 @@ export default {
       }
     },
     deletePost: async (_, { id }, { req, secret, models }) => {
-      const user = await getUserId(req, secret, models)
+      const user = await getUser(req, secret, models)
 
       await models.Post.deleteOne({ _id: id })
 
       await models.User.updateOne(
-        { _id: userId },
+        { _id: user.id },
         { $pull: { posts: { _id: id } } }
       )
     },
     updatePost: async (_, { id, title, content }, { req, secret, models }) => {
-      const user = getUserId(req, secret, models)
+      const user = getUser(req, secret, models)
 
-      await models.Post.updateOne({ _id: id }, { title: title, content: content })
+      await models.Post.updateOne({ _id: user.id }, { title: title, content: content })
 
       return {
         id,

@@ -56,7 +56,7 @@ export default {
       }
     },
     addPostToFavourites: async (_, { postId }, { req, models, secret }) => {
-      const userId = await getUserId(req, secret, models)
+      const user = await getUser(req, secret, models)
 
       const post = await models.Post.findOne({ _id: postId })
 
@@ -65,7 +65,7 @@ export default {
       }
 
       await models.User.updateOne(
-        { _id: userId },
+        { _id: user.id },
         { $push: { favourite_posts: { _id: postId } } }
       )
 
