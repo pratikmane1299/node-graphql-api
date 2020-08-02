@@ -76,10 +76,13 @@ export default {
     posts: async (user, args, { models }, info) => {
       return await models.Post.find({ author: user.id })
     },
-    favourite_posts: async (user, args, { models }, info) => {
+    favourite_posts: async (user, { offset = 0, limit = 8 }, { models }, info) => {
       const data = await models.Favourite
         .find({ user: user.id }, 'post')
         .populate('post')
+        .sort({ createdAt: -1 })
+        .skip(offset)
+        .limit(limit)
       return data.map(d => d.post)
     }
   }

@@ -18,7 +18,7 @@ const userSchema = gql`
     username: String!
     avatar_url: String
     posts: [Post!]
-    favourite_posts: [Post!]
+    favourite_posts(offset: Int, limit: Int): [Post!]
   }
 
   type AuthResponse {
