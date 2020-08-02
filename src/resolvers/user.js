@@ -64,10 +64,10 @@ export default {
         throw Error('Post Not Found')
       }
 
-      await models.User.updateOne(
-        { _id: user.id },
-        { $push: { favourite_posts: { _id: postId } } }
-      )
+      await models.Favourite.create({
+        user: user._id,
+        post: postId
+      })
 
       return post
     }
@@ -77,10 +77,10 @@ export default {
       return await models.Post.find({ author: user.id })
     },
     favourite_posts: async (user, args, { models }, info) => {
-      const data = await models.User
-        .findOne({ _id: user.id })
-        .populate('favourite_posts')
-      return data.favourite_posts
+      const data = await models.Favourite
+        .find({ user: user.id }, 'post')
+        .populate('post')
+      return data.map(d => d.post)
     }
   }
 }
