@@ -70,6 +70,16 @@ export default {
       })
 
       return post
+    },
+    removePostFromFavourites: async (_, { postId }, { req, models, secret }) => {
+      const user = await getUser(req, secret, models)
+
+      const result = await models.Favourite.findOneAndDelete({
+        user: user._id,
+        post: postId
+      })
+
+      return result.post
     }
   },
   User: {

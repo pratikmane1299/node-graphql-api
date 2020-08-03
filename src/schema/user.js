@@ -11,6 +11,7 @@ const userSchema = gql`
     signUp(username: String!, password: String!): AuthResponse
     login(username: String!, password: String!): AuthResponse
     addPostToFavourites(postId: ID!): Post
+    removePostFromFavourites(postId: ID!): ID
   }
 
   type User {
