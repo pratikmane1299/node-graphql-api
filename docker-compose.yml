@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  db:
+    image: mongo:4
+    container_name: graphql-api-db
+    restart: always
+    volumes:
+      - mongodb:/data/db
+    ports:
+      - ${MONGO_DB_PORT}:${MONGO_DB_PORT}
+  api:
+    build: .
+    container_name: graphql-api
+    restart: on-failure
+    depends_on:
+      - db
+    volumes:
+      - ./:/usr/src/app:cached
+      - npm_cache:/root/.npm:delegated
+      - node_modules:/usr/src/app/node_modules:delegated
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      PORT: ${PORT}
+      SECRET: ${SECRET}
+      MONGO_DB_PORT: ${MONGO_DB_PORT}
+      MONGO_DB_HOST: ${MONGO_DB_HOST}
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+volumes:
+  npm_cache:
+  node_modules:
+  mongodb:

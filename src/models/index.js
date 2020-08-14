@@ -5,7 +5,8 @@ import Post from './post'
 import Favourite from './favouritePosts'
 
 const connectDB = () => {
-  return mongoose.connect(`${process.env.DB_URL}${process.env.DB_NAME}`, {
+  const connectionString = `mongodb://db:${process.env.MONGO_DB_PORT}/${process.env.MONGO_DB_NAME}`
+  return mongoose.connect(connectionString, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
