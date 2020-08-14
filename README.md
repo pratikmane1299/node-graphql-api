@@ -30,3 +30,24 @@ Copy .env.example to .env and add your own values
 ```bash
 $ npm start
 ```
+
+## Running using Docker
+
+Install Docker and run the below command
+
+```bash
+$ docker-compose up
+```
+
+### Using Docker Toolbox
+
+Steps to use localhost instead of ip address.
+
+**In VirtualBox:**
+
+1. Select "default" machine and click on Setting.
+2. Navigate to Network > Adapter 1 > Advanced > Port Forwarding.
+3. Click "+" to add new rule.
+4. Set Host Port <code><Port as in .env></code> and Guest Port to <code><Port as in .env></code> and leave Host IP & Guest IP empty.
+
+Do the above step for both mongo database and the graphql server.
