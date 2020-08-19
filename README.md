@@ -12,7 +12,7 @@ A graphql api with [**node**](https://nodejs.org/en/), [**apollo-graphql**](http
 
 ```bash
 $ git clone https://github.com/pratikmane1299/node-graphql-api.git
-$ cd deno-rest-api
+$ cd node-graphql-api
 ```
 
 **Setup environment vaiables**
