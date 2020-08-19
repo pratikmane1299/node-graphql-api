@@ -83,8 +83,11 @@ export default {
     }
   },
   User: {
-    posts: async (user, args, { models }, info) => {
+    posts: async (user, { offset = 0, limit = 8 }, { models }, info) => {
       return await models.Post.find({ author: user.id })
+        .sort({ createdAt: -1 })
+        .skip(offset)
+        .limit(limit)
     },
     favourite_posts: async (user, { offset = 0, limit = 8 }, { models }, info) => {
       const data = await models.Favourite

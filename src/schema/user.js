@@ -18,7 +18,7 @@ const userSchema = gql`
     id: ID!
     username: String!
     avatar_url: String
-    posts: [Post!]
+    posts(offset: Int, limit: Int): [Post!]
     favourite_posts(offset: Int, limit: Int): [Post!]
   }
 
