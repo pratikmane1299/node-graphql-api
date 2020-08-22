@@ -97,6 +97,9 @@ export default {
         .skip(offset)
         .limit(limit)
       return data.map(d => d.post)
+    },
+    totalPosts: async (user, _, { models }) => {
+      return await models.Post.estimatedDocumentCount({ author: user.id })
     }
   }
 }
