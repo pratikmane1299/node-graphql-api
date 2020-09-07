@@ -10,7 +10,8 @@ const postSchema = gql`
   extend type Mutation {
     createPost(title: String!, content: String!, thumbnail: String): Post!
     updatePost(id: ID!, title: String!, content: String!): Post!
-    deletePost(id: ID!): Post
+    deletePost(id: ID!): Post,
+    likeUnLikePost(postId: ID!): Like!
   }
 
   scalar Date
@@ -20,9 +21,16 @@ const postSchema = gql`
     title: String!
     content: String!
     thumbnail: String
-    author: User!
+    author: User!,
+    likes: [Like],
+    likesCount: Int,
     createdAt: Date,
     updatedAt: Date
+  }
+
+  type Like {
+    post: Post!
+    likedBy: User!
   }
 `
 export default postSchema

@@ -15,7 +15,15 @@ const postSchema = new mongoose.Schema({
   author: {
     type: mongoose.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  likes: [
+    {
+      likedBy: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
+      }
+    }
+  ]
 }, {
   timestamps: true
 })

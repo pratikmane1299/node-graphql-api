@@ -75,7 +75,26 @@ export default {
         title,
         content
       }
-    }
+    },
+    likeUnLikePost: async (_, { postId }, { req, secret, models }) => {
+      const user = await getUser(req, secret, models)
+
+      const post = await models.Post.findOne({ _id: postId }, '_id title content thumbnail likes')
+      const userId = String(user._id)
+
+      if (post.likes.find(like => String(like.likedBy) === userId)) {
+        post.likes = post.likes.filter(like => String(like.likedBy) !== userId)
+      } else {
+        post.likes.push({ likedBy: user._id })
+      }
+
+      await post.save();
+
+      return {
+        post,
+        likedBy: user
+      }
+    },
   },
   Post: {
     author: async (post, args, { models }) => {
@@ -86,6 +105,21 @@ export default {
         username: user.username,
         avatar_url: user.avatar_url
       }
+    },
+    likes: async (post, _, { models }) => {
+      const res = await models.Post
+        .findOne({ _id: post.id }, 'likes')
+        .populate({ path: 'likes', populate: { path: 'likedBy', select: '_id username avatar_url' } })
+
+      return res.likes.map(l => {
+        return {
+          likedBy: l.likedBy
+        }
+      })
+
+    },
+    likesCount: (post) => {
+      return post.likes.length
     }
   }
 }
