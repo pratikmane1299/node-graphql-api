@@ -94,17 +94,6 @@ export default {
         post,
         likedBy: user
       }
-    },
-    comment: async (_, { postId, text }, { req, secret, models }) => {
-      const user = await getUser(req, secret, models)
-
-      const comment = await models.Comment.create({
-        text,
-        post: postId,
-        commentedBy: user.id
-      })
-
-      return comment
     }
   },
   Post: {
@@ -139,11 +128,6 @@ export default {
     },
     commentsCount: async (post, _, { models }) => {
       return await models.Comment.estimatedDocumentCount({ post: post.id })
-    }
-  },
-  Comment: {
-    commentedBy: async (comment, _, { models }) => {
-      return await models.User.findOne({ _id: comment.commentedBy })
     }
   }
 }
