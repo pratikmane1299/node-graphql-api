@@ -95,6 +95,17 @@ export default {
         likedBy: user
       }
     },
+    comment: async (_, { postId, text }, { req, secret, models }) => {
+      const user = await getUser(req, secret, models)
+
+      const comment = await models.Comment.create({
+        text,
+        post: postId,
+        commentedBy: user.id
+      })
+
+      return comment
+    }
   },
   Post: {
     author: async (post, args, { models }) => {
@@ -120,6 +131,16 @@ export default {
     },
     likesCount: (post) => {
       return post.likes.length
+    },
+    comments: async (post, _, { models }) => {
+      return await models.Comment
+        .find({ post: post.id })
+        .sort({ createdAt: -1 })
+    }
+  },
+  Comment: {
+    commentedBy: async (comment, _, { models }) => {
+      return await models.User.findOne({ _id: comment.commentedBy })
     }
   }
 }

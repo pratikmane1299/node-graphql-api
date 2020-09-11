@@ -12,6 +12,7 @@ const postSchema = gql`
     updatePost(id: ID!, title: String!, content: String!): Post!
     deletePost(id: ID!): Post,
     likeUnLikePost(postId: ID!): Like!
+    comment(postId: ID!, text: String!): Comment
   }
 
   scalar Date
@@ -24,6 +25,7 @@ const postSchema = gql`
     author: User!,
     likes: [Like],
     likesCount: Int,
+    comments: [Comment],
     createdAt: Date,
     updatedAt: Date
   }
@@ -31,6 +33,14 @@ const postSchema = gql`
   type Like {
     post: Post!
     likedBy: User!
+  }
+
+  type Comment {
+    id: ID!,
+    text: String!,
+    post: Post!,
+    commentedBy: User!,
+    createdAt: Date
   }
 `
 export default postSchema
