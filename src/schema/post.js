@@ -26,6 +26,7 @@ const postSchema = gql`
     likes: [Like],
     likesCount: Int,
     comments: [Comment],
+    commentsCount: Int,
     createdAt: Date,
     updatedAt: Date
   }

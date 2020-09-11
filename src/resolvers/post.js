@@ -136,6 +136,9 @@ export default {
       return await models.Comment
         .find({ post: post.id })
         .sort({ createdAt: -1 })
+    },
+    commentsCount: async (post, _, { models }) => {
+      return await models.Comment.estimatedDocumentCount({ post: post.id })
     }
   },
   Comment: {
