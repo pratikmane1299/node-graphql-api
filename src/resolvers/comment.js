@@ -1,6 +1,13 @@
 import { getUser } from './../util.js'
 
 export default {
+  Query: {
+    comments: async (_, { postId }, { req, secret, models }) => {
+      return await models.Comment
+        .find({ post: postId })
+        .sort({ createdAt: -1 })
+    }
+  },
   Mutation: {
     comment: async (_, { postId, text }, { req, secret, models }) => {
       const user = await getUser(req, secret, models)
