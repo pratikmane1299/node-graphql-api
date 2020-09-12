@@ -99,7 +99,7 @@ export default {
       return data.map(d => d.post)
     },
     totalPosts: async (user, _, { models }) => {
-      return await models.Post.estimatedDocumentCount({ author: user.id })
+      return await models.Post.find({ author: user.id }).countDocuments()
     }
   }
 }
