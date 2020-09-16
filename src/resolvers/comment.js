@@ -1,3 +1,4 @@
+import { UserInputError } from 'apollo-server'
 import { getUser } from './../util.js'
 
 export default {
@@ -19,6 +20,21 @@ export default {
       })
 
       return comment
+    },
+    deleteComment: async (_, { commentId }, { req, secret, models }) => {
+      const user = await getUser(req, secret, models)
+
+      const comment = await models.Comment.findOne({ _id: commentId })
+
+      if (!comment) {
+        throw new UserInputError('Comment Not Found')
+      }
+
+      if (String(user.id) !== String(comment.commentedBy)) {
+        throw new Error('Not Authorized')
+      }
+
+      return await models.Comment.findOneAndDelete({ _id: commentId })
     }
   },
   Comment: {
