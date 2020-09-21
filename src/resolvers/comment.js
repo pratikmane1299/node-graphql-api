@@ -1,41 +1,50 @@
 import { UserInputError } from 'apollo-server'
-import { getUser } from './../util.js'
+import { combineResolvers } from 'graphql-resolvers';
+
+import { isAuthenticated } from './../util.js'
 
 export default {
   Query: {
-    comments: async (_, { postId }, { req, secret, models }) => {
-      return await models.Comment
-        .find({ post: postId })
-        .sort({ createdAt: -1 })
-    }
+    comments: combineResolvers(
+      isAuthenticated,
+      async (_, { postId }, { models }) => {
+        return await models.Comment
+          .find({ post: postId })
+          .sort({ createdAt: -1 })
+      }
+    )
   },
   Mutation: {
-    comment: async (_, { postId, text }, { req, secret, models }) => {
-      const user = await getUser(req, secret, models)
-
-      const comment = await models.Comment.create({
-        text,
-        post: postId,
-        commentedBy: user.id
-      })
-
-      return comment
-    },
-    deleteComment: async (_, { commentId }, { req, secret, models }) => {
-      const user = await getUser(req, secret, models)
-
-      const comment = await models.Comment.findOne({ _id: commentId })
-
-      if (!comment) {
-        throw new UserInputError('Comment Not Found')
+    comment: combineResolvers(
+      isAuthenticated,
+      async (_, { postId, text }, { req: { user }, models }) => {
+  
+        const comment = await models.Comment.create({
+          text,
+          post: postId,
+          commentedBy: user.id
+        })
+  
+        return comment
       }
-
-      if (String(user.id) !== String(comment.commentedBy)) {
-        throw new Error('Not Authorized')
+    ),
+    deleteComment: combineResolvers(
+      isAuthenticated,
+      async (_, { commentId }, { req: { user }, models }) => {
+  
+        const comment = await models.Comment.findOne({ _id: commentId })
+  
+        if (!comment) {
+          throw new UserInputError('Comment Not Found')
+        }
+  
+        if (String(user.id) !== String(comment.commentedBy)) {
+          throw new Error('Not Authorized')
+        }
+  
+        return await models.Comment.findOneAndDelete({ _id: commentId })
       }
-
-      return await models.Comment.findOneAndDelete({ _id: commentId })
-    }
+    )
   },
   Comment: {
     commentedBy: async (comment, _, { models }) => {

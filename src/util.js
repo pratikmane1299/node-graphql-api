@@ -1,30 +1,34 @@
 import jwt from 'jsonwebtoken'
 import { AuthenticationError } from 'apollo-server-express'
 
-import { User } from './models/user'
+import { skip } from 'graphql-resolvers'
 
 const createToken = async (user) => {
   const { _id, username } = user
   return jwt.sign({ id: _id, username }, process.env.SECRET, {
-    expiresIn: 3600
+    expiresIn: '1d',
+    algorithm: 'HS256'
   })
 }
 
-const getUser = async (req, secret, models) => {
-  // console.log(req)
-  const token = req.headers.authorization.split(' ')[1]
-  if (!token) throw new AuthenticationError('Unauthorized, JWT token not found')
-  try {
-    const { id } = await jwt.verify(token, secret)
-
-    const user = await models.User.findOne({ _id: id })
-
-    if (!user) throw new AuthenticationError('Unauthorized')
-
-    return user
-  } catch (e) {
-    throw new AuthenticationError('Invalid JWT token')
+const getMe = req => {
+  const authorization = req.headers['authorization']
+  
+  if (authorization) {
+    try {
+      const token = authorization.split(' ')[1]
+      return jwt.verify(token, process.env.SECRET)
+    } catch {
+      throw new AuthenticationError('Invalid JWT Token')
+    }
   }
+};
+
+const isAuthenticated = (parent, args, { req: { user } }) => {
+  if (!user) {
+    throw new AuthenticationError('Not Authenticated')
+  }
+  skip
 }
 
-export { createToken, getUser }
+export { createToken, getMe, isAuthenticated }

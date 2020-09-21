@@ -1,7 +1,8 @@
-import { getUser } from './../util.js'
-import { model } from 'mongoose';
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
+import { combineResolvers } from 'graphql-resolvers';
+
+import { getUser, isAuthenticated } from './../util.js'
 
 export default {
   Date: new GraphQLScalarType({
@@ -24,37 +25,45 @@ export default {
     posts: async (_, __, { models }) => {
       return await models.Post.find({}).sort({ createdAt: -1 })
     },
-    post: async (_, { id }, { models }) => {
-      return await models.Post.findOne({ _id: id })
-    },
-    feed: async (_, { offset = 0, limit = 5 }, { models }) => {
-      return await models.Post.find({}).sort({ createdAt: -1 }).skip(offset).limit(limit)
-    }
+    post: combineResolvers(
+      isAuthenticated,
+      async (_, { id }, { models }) => {
+        return await models.Post.findOne({ _id: id })
+      }
+    ),
+    feed: combineResolvers(
+      isAuthenticated,
+      async (_, { offset = 0, limit = 5 }, { models }) => {
+        return await models.Post.find({}).sort({ createdAt: -1 }).skip(offset).limit(limit)
+      }
+    )
   },
   Mutation: {
-    createPost: async (_, { title, content, thumbnail }, { models, req, secret }) => {
-      const user = await getUser(req, secret, models)
-
-      const post = await models.Post.create({
-        title,
-        content,
-        thumbnail,
-        author: user.id
-      })
-
-      await models.User.updateOne(
-        { _id: user.id },
-        { $push: { posts: { _id: post._id } } }
-      )
-
-      return {
-        id: post._id,
-        title,
-        content,
-        thumbnail,
-        createdAt: post.createdAt
+    createPost: combineResolvers(
+      isAuthenticated,
+      async (_, { title, content, thumbnail }, { models, req: { user }}) => {
+        console.log(user);
+        const post = await models.Post.create({
+          title,
+          content,
+          thumbnail,
+          author: user.id
+        })
+  
+        await models.User.updateOne(
+          { _id: user.id },
+          { $push: { posts: { _id: post._id } } }
+        )
+  
+        return {
+          id: post._id,
+          title,
+          content,
+          thumbnail,
+          createdAt: post.createdAt
+        }
       }
-    },
+    ),
     deletePost: async (_, { id }, { req, secret, models }) => {
       const user = await getUser(req, secret, models)
 
@@ -76,25 +85,27 @@ export default {
         content
       }
     },
-    likeUnLikePost: async (_, { postId }, { req, secret, models }) => {
-      const user = await getUser(req, secret, models)
-
-      const post = await models.Post.findOne({ _id: postId }, '_id title content thumbnail likes')
-      const userId = String(user._id)
-
-      if (post.likes.find(like => String(like.likedBy) === userId)) {
-        post.likes = post.likes.filter(like => String(like.likedBy) !== userId)
-      } else {
-        post.likes.push({ likedBy: user._id })
+    likeUnLikePost: combineResolvers(
+      isAuthenticated,
+      async (_, { postId }, { req: { user }, models }) => {
+  
+        const post = await models.Post.findOne({ _id: postId }, '_id title content thumbnail likes')
+        const userId = String(user.id)
+  
+        if (post.likes.find(like => String(like.likedBy) === userId)) {
+          post.likes = post.likes.filter(like => String(like.likedBy) !== userId)
+        } else {
+          post.likes.push({ likedBy: user.id })
+        }
+  
+        await post.save();
+  
+        return {
+          post,
+          likedBy: user
+        }
       }
-
-      await post.save();
-
-      return {
-        post,
-        likedBy: user
-      }
-    }
+    )
   },
   Post: {
     author: async (post, args, { models }) => {

@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { AuthenticationError } from 'apollo-server'
+import { combineResolvers } from 'graphql-resolvers';
 
-import { getUser } from './../util.js'
+import { createToken, getUser, isAuthenticated } from './../util.js'
 
 export default {
   Query: {
@@ -11,13 +12,16 @@ export default {
     user: async (_, { id }, { models }) => {
       return await models.User.findOne({ _id: id })
     },
-    me: async (_, __, { req, models, secret }) => {
-      const user = await getUser(req, secret, models)
-
-      if (!user) throw new AuthenticationError('User Not Found')
-
-      return user;
-    }
+    me: combineResolvers(
+      isAuthenticated,
+      async (_, __, { req, models }) => {
+        const user = await models.User.findOne({ _id: req.user.id })
+  
+        if (!user) throw new AuthenticationError('User Not Found')
+  
+        return user;
+      }
+    )
   },
   Mutation: {
     signUp: async (_, { username, password }, { models, secret, req, port }) => {
@@ -28,7 +32,7 @@ export default {
         avatar_url
       })
 
-      const token = jwt.sign({ id: user._id, username }, secret)
+      const token = createToken(user)
 
       return {
         id: user._id,
@@ -37,16 +41,14 @@ export default {
         token
       }
     },
-    login: async (_, { username, password }, { models, secret }) => {
+    login: async (_, { username, password }, { models }) => {
       const user = await models.User.findOne({ username: username })
       if (!user) return
 
       const isValid = await user.comparePasswords(password)
       if (!isValid) throw new AuthenticationError('Incorrect Password')
 
-      const token = jwt.sign({ id: user._id, username }, secret, {
-        expiresIn: '1h'
-      })
+      const token = createToken(user)
 
       return {
         id: user._id,
@@ -55,32 +57,35 @@ export default {
         token
       }
     },
-    addPostToFavourites: async (_, { postId }, { req, models, secret }) => {
-      const user = await getUser(req, secret, models)
-
-      const post = await models.Post.findOne({ _id: postId })
-
-      if (!post) {
-        throw Error('Post Not Found')
+    addPostToFavourites: combineResolvers(
+      isAuthenticated,
+      async (_, { postId }, { req: { user }, models}) => {
+        const post = await models.Post.findOne({ _id: postId })
+  
+        if (!post) {
+          throw Error('Post Not Found')
+        }
+  
+        await models.Favourite.create({
+          user: user.id,
+          post: postId
+        })
+  
+        return post
       }
-
-      await models.Favourite.create({
-        user: user._id,
-        post: postId
-      })
-
-      return post
-    },
-    removePostFromFavourites: async (_, { postId }, { req, models, secret }) => {
-      const user = await getUser(req, secret, models)
-
-      const result = await models.Favourite.findOneAndDelete({
-        user: user._id,
-        post: postId
-      })
-
-      return result.post
-    }
+    ),
+    removePostFromFavourites: combineResolvers(
+      isAuthenticated,
+      async (_, { postId }, { req: { user }, models}) => {
+  
+        const result = await models.Favourite.findOneAndDelete({
+          user: user.id,
+          post: postId
+        })
+  
+        return result.post
+      }
+    )
   },
   User: {
     posts: async (user, { offset = 0, limit = 8 }, { models }, info) => {

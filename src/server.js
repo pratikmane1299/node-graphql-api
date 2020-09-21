@@ -5,21 +5,31 @@ import schema from './schema'
 import resolvers from './resolvers'
 import models, { connectDB } from './models'
 import path from 'path'
-
+import { getMe } from './util'
 const app = express()
 
 const port = process.env.PORT || 3000
 
-const graphqlServer = new ApolloServer({
+const graphqlServer = new ApolloServer({ 
   typeDefs: schema,
   resolvers,
-  context: (req) => {
-    // const me = getMe(req)
-    return {
-      ...req,
-      models,
-      secret: process.env.SECRET,
-      port
+  context: ({ req, connection }) => {
+    if (connection) {
+      return {
+        req,
+        models,
+        port
+      }
+    }
+
+    if (req) {
+      const user = getMe(req)
+      req.user = user || null
+      return {
+        req,
+        models,
+        port
+      }   
     }
   }
 })
