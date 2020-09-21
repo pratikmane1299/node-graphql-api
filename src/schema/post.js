@@ -24,6 +24,7 @@ const postSchema = gql`
     author: User!,
     likes: [Like],
     likesCount: Int,
+    liked: Boolean,
     comments: [Comment],
     commentsCount: Int,
     createdAt: Date,

@@ -132,6 +132,9 @@ export default {
     likesCount: (post) => {
       return post.likes.length
     },
+    liked: (post, _, { req: { user } }) => {
+      return !!post.likes.find(like => String(like.likedBy) === String(user.id))
+    },
     comments: async (post, _, { models }) => {
       return await models.Comment
         .find({ post: post.id })
