@@ -1,5 +1,6 @@
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
+import { AuthenticationError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
 
 import { getUser, isAuthenticated } from './../util.js'
@@ -22,9 +23,12 @@ export default {
     },
   }),
   Query: {
-    posts: async (_, __, { models }) => {
-      return await models.Post.find({}).sort({ createdAt: -1 })
-    },
+    posts: combineResolvers(
+      isAuthenticated,
+      async (_, __, { models }) => {
+        return await models.Post.find({}).sort({ createdAt: -1 })
+      }
+    ),
     post: combineResolvers(
       isAuthenticated,
       async (_, { id }, { models }) => {
@@ -134,6 +138,9 @@ export default {
     },
     liked: (post, _, { req: { user } }) => {
       return !!post.likes.find(like => String(like.likedBy) === String(user.id))
+    },
+    isFavourite: async (post, _, { req:{ user }, models }) => {
+      return !!(await models.Favourite.findOne({user: user.id, post: post.id}))
     },
     comments: async (post, _, { models }) => {
       return await models.Comment
